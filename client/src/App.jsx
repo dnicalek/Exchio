@@ -3,8 +3,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import SignIn from './views/signin';
 import SignUp from './views/signup';
 import Main from './views/main';
-import Forms from './views/forms';
-import Predictions from './views/predictions';
+import { RequireAuth } from 'react-auth-kit';
 
 function App() {
 
@@ -16,21 +15,18 @@ function App() {
         element={<SignIn />}
         />
         <Route
-        path='/registration'S
+        path='/register'
         element={<SignUp />}
         />
         <Route
-        path='/main'
-        element={<Main />}
+        path='/'
+        element={
+          <RequireAuth loginPath='/login'>
+            <Main />
+            </RequireAuth>
+        }
         />
-        <Route
-        path='/forms'
-        element={<Forms />}
-        />
-         <Route
-        path='/predictions'
-        element={<PredictionsS />}
-        />
+
     </Routes>
   </BrowserRouter>
   );

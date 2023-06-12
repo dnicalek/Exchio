@@ -1,4 +1,8 @@
 version: "3.8"
+x-common-variables: &common-variables
+  MYSQL_DATABASE: todoapp
+  MYSQL_USER: admin
+  MYSQL_PASSWORD: admin
 
 services:
   mysql_db:
@@ -7,13 +11,14 @@ services:
     cap_add:
       - SYS_NICE
     volumes:
-      - ./setup/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - "./setup.sql:/docker-entrypoint-initdb.d/setup.sql"
     ports:
       - "9906:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: admin
+      <<: *common-variables
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
       MYSQL_HOST: localhost
-
+      
   api:
     build: ./api 
     container_name: api

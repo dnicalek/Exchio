@@ -1,6 +1,6 @@
-import React from 'react'
-import './main.css'
-import './forms.css'
+
+// import './main.css'
+// import './forms.css'
 
 export default function Predictions() {
   return (
