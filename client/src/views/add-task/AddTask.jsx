@@ -5,11 +5,14 @@ import { schema } from './validationSchema';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar';
+import { useAuthUser, } from 'react-auth-kit';
 
 
 
 
 export default function AddTask() {
+    const authUser = useAuthUser();
+    const username = authUser()?.username || '';
     const [isButtonHovered, setButtonHovered] = useState(false);
     const navigate = useNavigate();
     const {
@@ -24,7 +27,7 @@ export default function AddTask() {
     const onSubmit = async (data) => {
         console.log("Data: ", data);
         try {
-            await axios.post("http://localhost:3000/register", data);
+            await axios.post("http://localhost:3000/addTask", data);
             navigate("/");
         } catch (error) {
             if (error && error instanceof AxiosError) {
@@ -116,6 +119,12 @@ export default function AddTask() {
                             <span style={errorTextStyle}>{errors.priority.message}</span>
                         )}
                     </div>
+
+                    <input
+                                    type="hidden"
+                                    {...register('username')}
+                                    defaultValue={username}
+                                />
                     
                     <button
                         type="submit"
