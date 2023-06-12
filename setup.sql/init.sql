@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   deadline DATE NOT NULL,
   notes TEXT,
   priority ENUM('high', 'medium', 'low') NOT NULL,
-  userName VARCHAR(255) NOT NULL,
+  username VARCHAR(255) NOT NULL,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   status ENUM('todo', 'inprogress', 'completed') DEFAULT 'todo' NOT NULL
 );
