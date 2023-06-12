@@ -138,20 +138,104 @@ app.post('/addTask', (req, res) => {
 
 
 // Get Tasks
+// app.get('/tasks/:username', (req, res) => {
+//   const { username } = req.params;
+
+//   const query = `SELECT * FROM tasks WHERE username = ?`;
+//   db.query(query, [username], (error, results) => {
+//     if (error) {
+//       console.error('Error while retrieving tasks:', error);
+//       res.status(500).send('An error occurred while retrieving tasks');
+//     } else {
+//       res.status(200).json(results);
+//     }
+//   });
+// });
+
 app.get('/tasks/:username', (req, res) => {
   const { username } = req.params;
-  console.log(username);
+  const query = `
+    SELECT
+      t.id,
+      t.taskName,
+      t.deadline,
+      t.notes,
+      t.priority,
+      t.username,
+      t.createdAt,
+      t.status,
+      s.id AS subtaskId,
+      s.taskId AS subtaskTaskId,
+      s.content AS subtaskContent,
+      s.username AS subtaskUsername,
+      s.created_at AS subtaskCreatedAt
+    FROM
+      tasks t
+    LEFT JOIN
+      subtasks s ON t.id = s.taskId
+    WHERE t.username = '${username}'
+  `;
 
-  const query = `SELECT * FROM tasks WHERE username = ?`;
-  db.query(query, [username], (error, results) => {
+  db.query(query, (error, results) => {
     if (error) {
-      console.error('Error while retrieving tasks:', error);
-      res.status(500).send('An error occurred while retrieving tasks');
+      console.error('Error while getting tasks and subtasks:', error);
+      res.status(500).json({ error: 'An error occurred while getting the tasks and subtasks' });
     } else {
-      res.status(200).json(results);
+      const tasks = {};
+      results.forEach((row) => {
+        const taskId = row.id;
+        if (!tasks[taskId]) {
+          tasks[taskId] = {
+            id: taskId,
+            taskName: row.taskName,
+            deadline: row.deadline,
+            notes: row.notes,
+            priority: row.priority,
+            username: row.username,
+            createdAt: row.createdAt,
+            status: row.status,
+            subtasks: [],
+          };
+        }
+
+        if (row.subtaskId) {
+          tasks[taskId].subtasks.push({
+            id: row.subtaskId,
+            taskId: row.subtaskTaskId,
+            content: row.subtaskContent,
+            username: row.subtaskUsername,
+            created_at: row.subtaskCreatedAt,
+          });
+        }
+      });
+
+      const tasksArray = Object.values(tasks);
+
+      res.status(200).json(tasksArray);
     }
   });
 });
+
+
+
+// Endpoint for adding a subtask
+app.post('/tasks/:taskId/subtasks', (req, res) => {
+  const { taskId } = req.params;
+  const { content, username } = req.body;
+
+  const query = `INSERT INTO subtasks (taskId, content, username) VALUES (?, ?, ?)`;
+  const values = [taskId, content, username];
+
+  db.query(query, values, (error, results) => {
+    if (error) {
+      console.error('Error while adding a subtask:', error);
+      res.status(500).json({ error: 'An error occurred while adding the subtask' });
+    } else {
+      res.status(201).json({ message: 'Subtask added successfully' });
+    }
+  });
+});
+
 
 
 

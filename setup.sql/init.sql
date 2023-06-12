@@ -20,3 +20,13 @@ CREATE TABLE IF NOT EXISTS tasks (
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   status ENUM('todo', 'inprogress', 'completed') DEFAULT 'todo' NOT NULL
 );
+
+
+CREATE TABLE IF NOT EXISTS subtasks (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  taskId INT NOT NULL,
+  content TEXT NOT NULL,
+  username VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (taskId) REFERENCES tasks(id)
+);

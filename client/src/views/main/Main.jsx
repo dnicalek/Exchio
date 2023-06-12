@@ -10,14 +10,19 @@ const TaskList = () => {
   const authUser = useAuthUser();
   const username = authUser()?.username || '';
 
+const fetchPosts = () => {
+  axios.get(`http://localhost:3000/tasks/${username}`)
+  .then(response => {
+    setTasks(response.data);
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error('Error while fetching tasks:', error);
+  });
+}
+
   useEffect(() => {
-    axios.get(`http://localhost:3000/tasks/${username}`)
-      .then(response => {
-        setTasks(response.data);
-      })
-      .catch(error => {
-        console.error('Error while fetching tasks:', error);
-      });
+    fetchPosts();
   }, []);
 
   return (
@@ -31,6 +36,9 @@ const TaskList = () => {
           notes={task.notes}
           priority={task.priority}
           status={task.status}
+          subtasks={task.subtasks}
+          fetchPosts={fetchPosts}
+        
         />
       ))}
     </div>
