@@ -27,7 +27,7 @@ export default function Navbar({ mode = 'unauth' }: NavbarProps) {
                                 TodoApp
                             </Link>
                             <div className="menu-icon" onClick={handleClick}>
-                                {click ? <FaTimes color="#fff" /> : <FaBars color="#fff" />}
+                                {click ? <FaTimes color="#A5CFB9" /> : <FaBars color="#A5CFB9" />}
                             </div>
                             <ul className={click ? "nav-menu active" : "nav-menu"}>
                                 <li className="nav-item">

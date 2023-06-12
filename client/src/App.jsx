@@ -4,6 +4,7 @@ import SignIn from './views/signin';
 import SignUp from './views/signup';
 import Main from './views/main';
 import { RequireAuth } from 'react-auth-kit';
+import AddTask from './views/add-task';
 
 function App() {
 
@@ -23,6 +24,14 @@ function App() {
         element={
           <RequireAuth loginPath='/login'>
             <Main />
+            </RequireAuth>
+        }
+        />
+          <Route
+        path='/addTask'
+        element={
+          <RequireAuth loginPath='/login'>
+            <AddTask />
             </RequireAuth>
         }
         />
