@@ -1,23 +1,18 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { registrationSchema } from './validationSchema';
+import { schema } from './validationSchema';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar';
+import { useAuthUser, } from 'react-auth-kit';
 
 
-const errorsTable = {
-    "An error occurred while checking the username.": "username",
-    "Username is already taken.": "username",
-    "An error occurred while checking the email.": "email",
-    "Email is already taken.": "email",
-    "An error occurred while hashing the password.": "password",
-    "An error occurred while registering the user.": "username"
-};
 
 
-export default function SignUp() {
+export default function AddTask() {
+    const authUser = useAuthUser();
+    const username = authUser()?.username || '';
     const [isButtonHovered, setButtonHovered] = useState(false);
     const navigate = useNavigate();
     const {
@@ -26,24 +21,22 @@ export default function SignUp() {
         setError,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(registrationSchema),
+        resolver: yupResolver(schema),
     });
 
     const onSubmit = async (data) => {
         console.log("Data: ", data);
         try {
-            await axios.post("http://localhost:3000/register", data);
+            await axios.post("http://localhost:3000/addTask", data);
             navigate("/");
         } catch (error) {
             if (error && error instanceof AxiosError) {
                 if (error.response) {
-                    setError(errorsTable[error.response.data], { message: error.response.data });
                     console.log(error)
                 } else {
-                    setError("username", { message: "An error occurred. Please try again later." });
-                    setError("password", { message: "An error occurred. Please try again later." });
-                    setError("confirmPassword", { message: "An error occurred. Please try again later." });
-                    setError("email", { message: "An error occurred. Please try again later." });
+                    setError("taskName", { message: "An error occurred. Please try again later." });
+                    setError("deadline", { message: "An error occurred. Please try again later." });
+                    setError("notes", { message: "An error occurred. Please try again later." });
                 }
             }
         }
@@ -51,72 +44,88 @@ export default function SignUp() {
 
     return (
         <>
-            <Navbar mode="unauth" />
+            <Navbar mode="auth" />
             <div style={formContainerStyle}>
                 <form onSubmit={handleSubmit(onSubmit)} style={formStyle}>
-                    <h1 style={formHeadingStyle}>Sign Up</h1>
+                    <h1 style={formHeadingStyle}>Add new task</h1>
                     <div style={fieldStyle}>
-                        <label htmlFor="username">Username:</label>
+                        <label htmlFor="taskName">Task:</label>
                         <input
                             type="text"
                             style={{
                                 ...inputStyle,
-                                ...(errors.username ? errorInputStyle : {}),
+                                ...(errors.taskName ? errorInputStyle : {}),
                             }}
-                            id="username"
-                            {...register("username")}
+                            id="taskName"
+                            {...register("taskName")}
                         />
-                        {errors.username && (
-                            <span style={errorTextStyle}>{errors.username.message}</span>
+                        {errors.taskName && (
+                            <span style={errorTextStyle}>{errors.taskName.message}</span>
                         )}
                     </div>
                     <div style={fieldStyle}>
-                        <label htmlFor="email">Email:</label>
+                        <label htmlFor="deadline">Deadline:</label>
                         <input
                             style={{
                                 ...inputStyle,
-                                ...(errors.email ? errorInputStyle : {}),
+                                ...(errors.deadline ? errorInputStyle : {}),
                             }}
-                            id="email"
-                            {...register("email", {
+                            type='date'
+                            defaultValue={new Date().toISOString().split('T')[0]}
+                            id="deadline"
+                            {...register("deadline", {
                             })}
                         />
-                        {errors.email && (
-                            <span style={errorTextStyle}>{errors.email.message}</span>
+                        {errors.deadline && (
+                            <span style={errorTextStyle}>{errors.deadline.message}</span>
                         )}
                     </div>
                     <div style={fieldStyle}>
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
+                        <label htmlFor="notes">Notes:</label>
+                        <textarea
                             style={{
                                 ...inputStyle,
-                                ...(errors.password ? errorInputStyle : {}),
+                                minHeight: '200px',
+                                resize: 'none',
+                                ...(errors.notes ? errorInputStyle : {}),
                             }}
-                            id="password"
-                            {...register("password")}
-                        />
-                        {errors.password && (
-                            <span style={errorTextStyle}>{errors.password.message}</span>
+                            id="notes"
+                            
+                            maxLength={500}
+                            {...register("notes")}
+                        ></textarea>
+                        {errors.notes && (
+                            <span style={errorTextStyle}>{errors.notes.message}</span>
                         )}
                     </div>
                     <div style={fieldStyle}>
-                        <label htmlFor="confirmPassword">Confirm password:</label>
-                        <input
-                            type="password"
-                            style={{
-                                ...inputStyle,
-                                ...(errors.confirmPassword ? errorInputStyle : {}),
-                            }}
-                            id="confirmPassword"
-                            {...register("confirmPassword")}
-                        />
-                        {errors.confirmPassword && (
-                            <span style={errorTextStyle}>
-                                {errors.confirmPassword.message}
-                            </span>
+                        <label htmlFor="priority">Priority:</label>
+                        <div style={selectContainerStyle}>
+                            <select
+                                style={{
+                                    ...inputStyle,
+                                    ...(errors.priority ? errorInputStyle : {}),
+                                }}
+                                id="priority"
+                                {...register("priority")}
+                            >
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                            <div style={selectArrowStyle}></div>
+                        </div>
+                        {errors.priority && (
+                            <span style={errorTextStyle}>{errors.priority.message}</span>
                         )}
                     </div>
+
+                    <input
+                                    type="hidden"
+                                    {...register('username')}
+                                    defaultValue={username}
+                                />
+                    
                     <button
                         type="submit"
                         style={
@@ -127,25 +136,8 @@ export default function SignUp() {
                         onMouseEnter={() => setButtonHovered(true)}
                         onMouseLeave={() => setButtonHovered(false)}
                     >
-                        Sign Up
+                        Add Task
                     </button>
-
-                    <div style={{
-                        color: '#A5CFB9',
-                        textAlign: 'center',
-                        fontSize: '1.2rem',
-                        marginBottom: -20,
-                    }}>Already have an account?</div>
-                    <div
-                        style={{
-                            color: '#fff',
-                            textAlign: 'center',
-                            fontSize: '1.2rem',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => navigate("/login")}
-                    >Sign In Here!</div>
                 </form>
             </div>
         </>
@@ -229,3 +221,25 @@ const buttonHoverStyle = {
   fontSize: '1.1em',
 
 };
+
+const selectContainerStyle = {
+    position: 'relative',
+    display: 'inline-block',
+    width: '100%',
+};
+
+const selectArrowStyle = {
+    position: 'absolute',
+    top: '50%',
+    right: '8px',
+    transform: 'translateY(-70%) translateX(-70%) rotate(-45deg)',
+    width: '10px',
+    height: '10px',
+    borderLeft: '2px solid #103727',
+    borderBottom: '2px solid #103727',
+    pointerEvents: 'none',
+    zIndex: '1',
+    transition: 'border-color 0.25s',
+};
+
+
