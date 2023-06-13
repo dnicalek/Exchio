@@ -24,7 +24,7 @@ export default function Navbar({ mode = 'unauth' }: NavbarProps) {
                     <nav className="navbar">
                         <div className="navbar-container container">
                             <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-                                TodoApp
+                                TaskerMajster
                             </Link>
                             <div className="menu-icon" onClick={handleClick}>
                                 {click ? <FaTimes color="#A5CFB9" /> : <FaBars color="#A5CFB9" />}
@@ -80,7 +80,7 @@ export default function Navbar({ mode = 'unauth' }: NavbarProps) {
                     <nav className="navbar">
                         <div className="navbar-container container">
                             <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-                                TodoApp
+                                TaskerMajster
                             </Link>
                             <div className="menu-icon" onClick={handleClick}>
                                 {click ? <FaTimes color="#fff" /> : <FaBars color="#fff" />}

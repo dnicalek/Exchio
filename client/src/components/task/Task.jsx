@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import {AiOutlinePlus} from 'react-icons/ai'
+import {FiSquare, FiCheck} from 'react-icons/fi'
 import {IoCloseSharp} from 'react-icons/io5'
 import {  useState } from 'react';
 import axios from 'axios';
@@ -19,6 +20,7 @@ export default function Task({
     fetchPosts
 }) {
     const [isButtonHovered, setButtonHovered] = useState(false);
+    const [isSubtaskHovered, setSubtaskHovered] = useState(false);
     const [inputVisible, setInputVisible] = useState(false);
     const authUser = useAuthUser();
     const username = authUser()?.username || '';
@@ -54,15 +56,122 @@ export default function Task({
         }
 
     };
+    
+
+    const deleteSubtask = (subtaskId) => {
+        axios.delete(`http://localhost:3000/subtasks/${subtaskId}`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } 
+
+    const updateSubtask = (subtaskId) => {
+        axios.put(`http://localhost:3000/subtasks/${subtaskId}/toggleStatus`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } 
+
+    const updateTask = (taskId, changeToStatus) => {
+        if(!(status === changeToStatus)) {
+            axios.put(`http://localhost:3000/tasks/${taskId}/${changeToStatus}`)
+            .then(response => {
+                console.log(response);
+                fetchPosts();
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        } 
+    }
+
+    const deleteTask = (taskId) => {
+        axios.delete(`http://localhost:3000/tasks/${taskId}`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
 
   return (
     <div style={taskContainer}>
+     
         <div>
-      <h3>{taskName}</h3>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 10,
+        }}>
+            <div 
+            style={
+                status === 'todo' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+            }
+            onClick={() => updateTask(id, 'todo')}
+            >Todo</div>
+            <div 
+            style={
+                status === 'inprogress' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+             
+            }
+            onClick={() => updateTask(id, 'inprogress')}
+            >In Progress</div>
+            <div 
+            style={
+                status === 'completed' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+             
+            }
+            onClick={() => updateTask(id, 'completed')}
+            >Done</div>
+        </div>
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        }}>
+      <h3 style={
+            status === 'completed' ?
+            {
+                textDecoration: 'line-through',
+                textDecorationThickness: 2,
+            } : null
+        }>{taskName}</h3>
+        {status === 'completed' ?
+                <IoCloseSharp 
+                    style={{
+                        width: 20,
+                        height: 20,
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => deleteTask(id)}
+                /> : <div 
+                style={{
+                    width: 20,
+                    height: 20,
+                }}
+                />}
+        </div>
       <p>{deadline.split('T')[0]}</p>
       <div style={{flexWrap: 'wrap'}}>{notes}</div>
       <p>Priority: {priority}</p>
-      <p>Status: {status}</p>
       </div>
       <div>
         {subtasks.length > 0 && (
@@ -75,13 +184,51 @@ export default function Task({
             {subtasks.map((subtask) => (
             <div 
             key={subtask.id}
-            style={{
-                borderTop: '1px solid #103727',
-                marginLeft: 10,
-                marginRight: 10,
-            }}
+            style={
+                isSubtaskHovered
+                    ? { ...subtaskStyle, ...subtaskHoverStyle }
+                    : { ...subtaskStyle }
+            }
+            onMouseEnter={() => setSubtaskHovered(true)}
+            onMouseLeave={() => setSubtaskHovered(false)}
             >
-                <p>{subtask.content}</p>
+                {subtask.status === 'todo' ?
+                <FiSquare 
+                style={{
+                    width: 20,
+                    height: 20,
+                    cursor: 'pointer'
+                }}
+                onClick={() => updateSubtask(subtask.id)}
+                />  : 
+                <FiCheck
+                style={{
+                    width: 20,
+                    height: 20,
+                    cursor: 'pointer'
+                }}
+                onClick={() => updateSubtask(subtask.id)}
+                /> }
+                <p style={
+                    subtask.status === 'completed' ?
+                    {
+                        textDecoration: 'line-through',
+                    } : null
+                }>{subtask.content}</p>
+                {isSubtaskHovered ?
+                <IoCloseSharp 
+                    style={{
+                        width: 20,
+                        height: 20,
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => deleteSubtask(subtask.id)}
+                /> : <div 
+                style={{
+                    width: 20,
+                    height: 20,
+                }}
+                />}
             </div>
             ))}
             </div>
@@ -112,7 +259,7 @@ export default function Task({
       />
       </div> :
       <div 
-        style={-
+        style={
             isButtonHovered
                 ? { ...addSubtask, ...buttonHoverStyle }
                 : { ...addSubtask }
@@ -130,13 +277,14 @@ export default function Task({
 
 const taskContainer = {
     backgroundColor: '#729A85',
-    borderRadius: 10,
+    borderRadius: 5,
     padding: 20,
     margin: 20,
     minWidth: 300,
     maxWidth: 500,
-    display: 'grid',
     flexDirection: 'column',
+    justifyContent: 'space-between',
+    display: 'flex',
     flexGrow: 1,
     overflowY: 'auto',
   };
@@ -148,14 +296,20 @@ const addSubtask = {
     display: 'flex',
     alignItems: 'center',
     marginTop: 10,
+    maxHeight: 35
 }
 
 const buttonHoverStyle = {
     backgroundColor: '#A5CFB9',
-    borderRadius: 10,
+    borderRadius: 5,
     cursor: 'pointer',
   };
   
+  const subtaskHoverStyle = {
+    backgroundColor: '#A5CFB9',
+    borderRadius: 5,
+  };
+
 const inputContainer = {
     borderBottom: '1px solid #103727',
     paddingTop: 5,
@@ -163,6 +317,7 @@ const inputContainer = {
     display: 'flex',
     alignItems: 'center',
     marginTop: 10,
+    maxHeight: 35
 }
 
 const inputStyle = {
@@ -174,8 +329,35 @@ const inputStyle = {
     padding: 5,
     fontSize: '0.9em',
     fontFamily: 'Source Sans Pro, sans-serif',
-    borderRadius: 10,
+    borderRadius: 5,
     outline: 'none',
     transition: 'background 0.25s, border-color 0.25s, color 0.25s',
     marginRight: 5,
+    maxHeight: 35
 };
+
+const subtaskStyle = {
+    borderTop: '1px solid #103727',
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: 'row',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+};
+
+const statusItem = {
+    fontWeight: 'bold',
+    borderRight: '1px solid #103727',
+    borderLeft: '1px solid #103727',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    cursor: 'pointer',
+    borderRadius: 5,
+}

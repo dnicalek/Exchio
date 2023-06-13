@@ -28,5 +28,6 @@ CREATE TABLE IF NOT EXISTS subtasks (
   content TEXT NOT NULL,
   username VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (taskId) REFERENCES tasks(id)
+  status ENUM('todo', 'inprogress', 'completed') DEFAULT 'todo' NOT NULL,
+  FOREIGN KEY (taskId) REFERENCES tasks(id) ON DELETE CASCADE
 );

@@ -130,12 +130,7 @@ export default function SignUp() {
                         Sign Up
                     </button>
 
-                    <div style={{
-                        color: '#A5CFB9',
-                        textAlign: 'center',
-                        fontSize: '1.2rem',
-                        marginBottom: -20,
-                    }}>Already have an account?</div>
+
                     <div
                         style={{
                             color: '#fff',
@@ -167,7 +162,7 @@ const formStyle = {
     width: '400px',
     maxWidth: '400px',
     padding: '2rem',
-    borderRadius: '10px',
+    borderRadius: 5,
     background: '#103727',
     gap: 20
 };
@@ -196,7 +191,7 @@ const inputStyle = {
     padding: '0.8em',
     fontSize: '0.9em',
     fontFamily: 'Source Sans Pro, sans-serif',
-    borderRadius: 10,
+    borderRadius: 5,
     outline: 'none',
     transition: 'background 0.25s, border-color 0.25s, color 0.25s'
 };
@@ -217,7 +212,7 @@ const buttonStyle = {
     fontSize: '1.1em',
     padding: '15px 16px',
     color: '#fff',
-    borderRadius: 10,
+    borderRadius: 5,
     border: 'none'
 };
 
