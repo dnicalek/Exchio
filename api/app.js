@@ -168,7 +168,8 @@ app.get('/tasks/:username', (req, res) => {
       s.taskId AS subtaskTaskId,
       s.content AS subtaskContent,
       s.username AS subtaskUsername,
-      s.created_at AS subtaskCreatedAt
+      s.created_at AS subtaskCreatedAt,
+      s.status AS subtaskStatus
     FROM
       tasks t
     LEFT JOIN
@@ -205,6 +206,7 @@ app.get('/tasks/:username', (req, res) => {
             content: row.subtaskContent,
             username: row.subtaskUsername,
             created_at: row.subtaskCreatedAt,
+            status: row.subtaskStatus,
           });
         }
       });
@@ -232,6 +234,49 @@ app.post('/tasks/:taskId/subtasks', (req, res) => {
       res.status(500).json({ error: 'An error occurred while adding the subtask' });
     } else {
       res.status(201).json({ message: 'Subtask added successfully' });
+    }
+  });
+});
+
+//Delete subtask
+app.delete('/subtasks/:subtaskId', (req, res) => {
+  const { subtaskId } = req.params;
+
+  const query = `
+    DELETE FROM subtasks
+    WHERE id = ${subtaskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while deleting subtask:', error);
+      res.status(500).json({ error: 'An error occurred while deleting the subtask' });
+    } else {
+      res.status(200).json({ message: 'Subtask deleted successfully' });
+    }
+  });
+});
+
+//update subtask status
+app.put('/subtasks/:subtaskId/toggleStatus', (req, res) => {
+  const { subtaskId } = req.params;
+
+  const query = `
+    UPDATE subtasks
+    SET status = CASE
+      WHEN status = 'completed' THEN 'todo'
+      WHEN status = 'todo' THEN 'completed'
+      ELSE status
+    END
+    WHERE id = ${subtaskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while toggling subtask status:', error);
+      res.status(500).json({ error: 'An error occurred while toggling the subtask status' });
+    } else {
+      res.status(200).json({ message: 'Subtask status toggled successfully' });
     }
   });
 });

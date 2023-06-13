@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import {AiOutlinePlus} from 'react-icons/ai'
+import {FiSquare, FiCheck} from 'react-icons/fi'
 import {IoCloseSharp} from 'react-icons/io5'
 import {  useState } from 'react';
 import axios from 'axios';
@@ -19,6 +20,7 @@ export default function Task({
     fetchPosts
 }) {
     const [isButtonHovered, setButtonHovered] = useState(false);
+    const [isSubtaskHovered, setSubtaskHovered] = useState(false);
     const [inputVisible, setInputVisible] = useState(false);
     const authUser = useAuthUser();
     const username = authUser()?.username || '';
@@ -54,7 +56,29 @@ export default function Task({
         }
 
     };
+    
 
+    const deleteSubtask = (subtaskId) => {
+        axios.delete(`http://localhost:3000/subtasks/${subtaskId}`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } 
+
+    const updateSubtask = (subtaskId) => {
+        axios.put(`http://localhost:3000/subtasks/${subtaskId}/toggleStatus`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    } 
   return (
     <div style={taskContainer}>
         <div>
@@ -75,13 +99,51 @@ export default function Task({
             {subtasks.map((subtask) => (
             <div 
             key={subtask.id}
-            style={{
-                borderTop: '1px solid #103727',
-                marginLeft: 10,
-                marginRight: 10,
-            }}
+            style={
+                isSubtaskHovered
+                    ? { ...subtaskStyle, ...subtaskHoverStyle }
+                    : { ...subtaskStyle }
+            }
+            onMouseEnter={() => setSubtaskHovered(true)}
+            onMouseLeave={() => setSubtaskHovered(false)}
             >
-                <p>{subtask.content}</p>
+                {subtask.status === 'todo' ?
+                <FiSquare 
+                style={{
+                    width: 20,
+                    height: 20,
+                    cursor: 'pointer'
+                }}
+                onClick={() => updateSubtask(subtask.id)}
+                />  : 
+                <FiCheck
+                style={{
+                    width: 20,
+                    height: 20,
+                    cursor: 'pointer'
+                }}
+                onClick={() => updateSubtask(subtask.id)}
+                /> }
+                <p style={
+                    subtask.status === 'completed' ?
+                    {
+                        textDecoration: 'line-through',
+                    } : null
+                }>{subtask.content}</p>
+                {isSubtaskHovered ?
+                <IoCloseSharp 
+                    style={{
+                        width: 20,
+                        height: 20,
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => deleteSubtask(subtask.id)}
+                /> : <div 
+                style={{
+                    width: 20,
+                    height: 20,
+                }}
+                />}
             </div>
             ))}
             </div>
@@ -112,7 +174,7 @@ export default function Task({
       />
       </div> :
       <div 
-        style={-
+        style={
             isButtonHovered
                 ? { ...addSubtask, ...buttonHoverStyle }
                 : { ...addSubtask }
@@ -148,6 +210,7 @@ const addSubtask = {
     display: 'flex',
     alignItems: 'center',
     marginTop: 10,
+    maxHeight: 35
 }
 
 const buttonHoverStyle = {
@@ -156,6 +219,11 @@ const buttonHoverStyle = {
     cursor: 'pointer',
   };
   
+  const subtaskHoverStyle = {
+    backgroundColor: '#A5CFB9',
+    borderRadius: 10,
+  };
+
 const inputContainer = {
     borderBottom: '1px solid #103727',
     paddingTop: 5,
@@ -163,6 +231,7 @@ const inputContainer = {
     display: 'flex',
     alignItems: 'center',
     marginTop: 10,
+    maxHeight: 35
 }
 
 const inputStyle = {
@@ -178,4 +247,19 @@ const inputStyle = {
     outline: 'none',
     transition: 'background 0.25s, border-color 0.25s, color 0.25s',
     marginRight: 5,
+    maxHeight: 35
 };
+
+const subtaskStyle = {
+    borderTop: '1px solid #103727',
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: 'row',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+}
