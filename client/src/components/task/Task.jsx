@@ -92,6 +92,18 @@ export default function Task({
             })
         } 
     }
+
+    const deleteTask = (taskId) => {
+        axios.delete(`http://localhost:3000/tasks/${taskId}`)
+        .then(response => {
+            console.log(response);
+            fetchPosts();
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
   return (
     <div style={taskContainer}>
      
@@ -130,6 +142,11 @@ export default function Task({
             onClick={() => updateTask(id, 'completed')}
             >Done</div>
         </div>
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        }}>
       <h3 style={
             status === 'completed' ?
             {
@@ -137,6 +154,21 @@ export default function Task({
                 textDecorationThickness: 2,
             } : null
         }>{taskName}</h3>
+        {status === 'completed' ?
+                <IoCloseSharp 
+                    style={{
+                        width: 20,
+                        height: 20,
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => deleteTask(id)}
+                /> : <div 
+                style={{
+                    width: 20,
+                    height: 20,
+                }}
+                />}
+        </div>
       <p>{deadline.split('T')[0]}</p>
       <div style={{flexWrap: 'wrap'}}>{notes}</div>
       <p>Priority: {priority}</p>

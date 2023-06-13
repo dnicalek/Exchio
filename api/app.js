@@ -342,6 +342,23 @@ app.put('/tasks/:taskId/completed', (req, res) => {
   });
 });
 
+app.delete('/tasks/:taskId', (req, res) => {
+  const { taskId } = req.params;
+
+  const query = `
+    DELETE FROM tasks
+    WHERE id = ${taskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while deleting task:', error);
+      res.status(500).json({ error: 'An error occurred while deleting the task' });
+    } else {
+      res.status(200).json({ message: 'Task deleted successfully' });
+    }
+  });
+});
 
 
 
