@@ -137,21 +137,6 @@ app.post('/addTask', (req, res) => {
 });
 
 
-// Get Tasks
-// app.get('/tasks/:username', (req, res) => {
-//   const { username } = req.params;
-
-//   const query = `SELECT * FROM tasks WHERE username = ?`;
-//   db.query(query, [username], (error, results) => {
-//     if (error) {
-//       console.error('Error while retrieving tasks:', error);
-//       res.status(500).send('An error occurred while retrieving tasks');
-//     } else {
-//       res.status(200).json(results);
-//     }
-//   });
-// });
-
 app.get('/tasks/:username', (req, res) => {
   const { username } = req.params;
   const query = `
