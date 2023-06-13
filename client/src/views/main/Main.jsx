@@ -3,12 +3,14 @@ import  { useEffect, useState } from 'react';
 import axios from 'axios';
 import Task from '../../components/task';
 import { useAuthUser, } from 'react-auth-kit';
+import { useNavigate } from "react-router-dom";
 
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const authUser = useAuthUser();
   const username = authUser()?.username || '';
+  const navigate = useNavigate();
 
 const fetchPosts = () => {
   axios.get(`http://localhost:3000/tasks/${username}`)
@@ -41,6 +43,29 @@ const fetchPosts = () => {
         
         />
       ))}
+      {tasks.length === 0 && 
+      <div
+        style={{
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: 40,
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          No tasks found.
+          </div>
+      <div
+        style={{
+          textDecoration: 'underline',
+          cursor: 'pointer'
+        }}
+        onClick={() => navigate('/addTask')}
+      >
+         Start by adding some
+        </div>
+      </div>
+      }
     </div>
   );
 };
