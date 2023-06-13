@@ -277,7 +277,7 @@ export default function Task({
 
 const taskContainer = {
     backgroundColor: '#729A85',
-    borderRadius: 10,
+    borderRadius: 5,
     padding: 20,
     margin: 20,
     minWidth: 300,
@@ -301,13 +301,13 @@ const addSubtask = {
 
 const buttonHoverStyle = {
     backgroundColor: '#A5CFB9',
-    borderRadius: 10,
+    borderRadius: 5,
     cursor: 'pointer',
   };
   
   const subtaskHoverStyle = {
     backgroundColor: '#A5CFB9',
-    borderRadius: 10,
+    borderRadius: 5,
   };
 
 const inputContainer = {
@@ -329,7 +329,7 @@ const inputStyle = {
     padding: 5,
     fontSize: '0.9em',
     fontFamily: 'Source Sans Pro, sans-serif',
-    borderRadius: 10,
+    borderRadius: 5,
     outline: 'none',
     transition: 'background 0.25s, border-color 0.25s, color 0.25s',
     marginRight: 5,
@@ -359,5 +359,5 @@ const statusItem = {
     paddingTop: 5,
     paddingBottom: 5,
     cursor: 'pointer',
-    borderRadius: 10,
+    borderRadius: 5,
 }
