@@ -79,14 +79,67 @@ export default function Task({
             console.log(error);
         })
     } 
+
+    const updateTask = (taskId, changeToStatus) => {
+        if(!(status === changeToStatus)) {
+            axios.put(`http://localhost:3000/tasks/${taskId}/${changeToStatus}`)
+            .then(response => {
+                console.log(response);
+                fetchPosts();
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        } 
+    }
   return (
     <div style={taskContainer}>
+     
         <div>
-      <h3>{taskName}</h3>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 10,
+        }}>
+            <div 
+            style={
+                status === 'todo' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+            }
+            onClick={() => updateTask(id, 'todo')}
+            >Todo</div>
+            <div 
+            style={
+                status === 'inprogress' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+             
+            }
+            onClick={() => updateTask(id, 'inprogress')}
+            >In Progress</div>
+            <div 
+            style={
+                status === 'completed' ? 
+                {backgroundColor: '#103727', color: "white", ...statusItem} : 
+                {...statusItem}
+             
+            }
+            onClick={() => updateTask(id, 'completed')}
+            >Done</div>
+        </div>
+      <h3 style={
+            status === 'completed' ?
+            {
+                textDecoration: 'line-through',
+                textDecorationThickness: 2,
+            } : null
+        }>{taskName}</h3>
       <p>{deadline.split('T')[0]}</p>
       <div style={{flexWrap: 'wrap'}}>{notes}</div>
       <p>Priority: {priority}</p>
-      <p>Status: {status}</p>
       </div>
       <div>
         {subtasks.length > 0 && (
@@ -197,8 +250,9 @@ const taskContainer = {
     margin: 20,
     minWidth: 300,
     maxWidth: 500,
-    display: 'grid',
     flexDirection: 'column',
+    justifyContent: 'space-between',
+    display: 'flex',
     flexGrow: 1,
     overflowY: 'auto',
   };
@@ -262,4 +316,16 @@ const subtaskStyle = {
     paddingRight: 10,
     paddingTop: 5,
     paddingBottom: 5,
+};
+
+const statusItem = {
+    fontWeight: 'bold',
+    borderRight: '1px solid #103727',
+    borderLeft: '1px solid #103727',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    cursor: 'pointer',
+    borderRadius: 10,
 }

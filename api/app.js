@@ -282,6 +282,67 @@ app.put('/subtasks/:subtaskId/toggleStatus', (req, res) => {
 });
 
 
+// Zmiana statusu taska na "todo"
+app.put('/tasks/:taskId/todo', (req, res) => {
+  const { taskId } = req.params;
+
+  const query = `
+    UPDATE tasks
+    SET status = 'todo'
+    WHERE id = ${taskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while updating task status:', error);
+      res.status(500).json({ error: 'An error occurred while updating the task status' });
+    } else {
+      res.status(200).json({ message: 'Task status updated to "todo" successfully' });
+    }
+  });
+});
+
+// Zmiana statusu taska na "inprogress"
+app.put('/tasks/:taskId/inprogress', (req, res) => {
+  const { taskId } = req.params;
+
+  const query = `
+    UPDATE tasks
+    SET status = 'inprogress'
+    WHERE id = ${taskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while updating task status:', error);
+      res.status(500).json({ error: 'An error occurred while updating the task status' });
+    } else {
+      res.status(200).json({ message: 'Task status updated to "inprogress" successfully' });
+    }
+  });
+});
+
+// Zmiana statusu taska na "completed"
+app.put('/tasks/:taskId/completed', (req, res) => {
+  const { taskId } = req.params;
+
+  const query = `
+    UPDATE tasks
+    SET status = 'completed'
+    WHERE id = ${taskId}
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error while updating task status:', error);
+      res.status(500).json({ error: 'An error occurred while updating the task status' });
+    } else {
+      res.status(200).json({ message: 'Task status updated to "completed" successfully' });
+    }
+  });
+});
+
+
 
 
 app.listen(port, () => {
